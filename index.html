@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>PHÂN TÍCH MD5</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: radial-gradient(circle at center, #000000, #111111);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      background: rgba(20, 20, 20, 0.9);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px #00ffff44, 0 0 50px #ff00ff33 inset;
+      width: 360px;
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+
+    h2 {
+      color: #ff00ff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 8px #ff00ff88;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+      border: none;
+      font-size: 14px;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    input, select {
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #666;
+      transition: transform 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #00ffff;
+      box-shadow: 0 0 10px #00ffff55;
+      transform: scale(1.02);
+    }
+
+    button {
+      background: linear-gradient(135deg, #ff00cc, #ff3399);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff00cc88;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #ff3399, #ff66cc);
+      box-shadow: 0 0 20px #ff00ccaa;
+      transform: scale(1.05);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #result {
+      margin-top: 16px;
+      font-size: 16px;
+      line-height: 1.5;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container" id="key-area">
+  <h2>🔐 Nhập License Key</h2>
+  <input type="text" id="license" placeholder="Nhập License Key...">
+  <button onclick="checkKey()">Kích Hoạt</button>
+</div>
+
+<div class="container hidden" id="main-app">
+  <h2>PHÂN TÍCH MD5</h2>
+  <label>🧠 Chọn Game</label>
+  <select id="gameType"></select>
+
+  <label>🧬 Nhập Mã MD5</label>
+  <input type="text" id="md5input" placeholder="Nhập mã MD5...">
+  <button onclick="analyzeMD5()">Phân Tích</button>
+
+  <div id="result"></div>
+</div>
+
+<script>
+  const vipKey = "admintoolv4";
+  const regularKey = "admin";
+
+  function checkKey() {
+    const inputKey = document.getElementById("license").value.trim();
+    const keyArea = document.getElementById("key-area");
+    const mainApp = document.getElementById("main-app");
+    const gameSelect = document.getElementById("gameType");
+
+    if (inputKey === vipKey) {
+      keyArea.classList.add("hidden");
+      mainApp.classList.remove("hidden");
+      gameSelect.innerHTML = `
+        <option value="sunwin">SUNWIN</option>
+        <option value="hitclub">HITCLUB</option>
+        <option value="socdia">SÓC ĐĨA</option>
+        <option value="vip79">VIP79</option>
+        <option value="789club">789CLUB</option>
+        <option value="b52">B52 CLUB</option>
+        <option value="iwin">IWIN CLUB</option>
+      `;
+    } else if (inputKey === regularKey) {
+      keyArea.classList.add("hidden");
+      mainApp.classList.remove("hidden");
+      gameSelect.innerHTML = `<option value="sunwin">SUNWIN</option>`;
+    } else {
+      alert("❌ Key không hợp lệ!");
+    }
+  }
+
+  function analyzeMD5() {
+    const md5 = document.getElementById("md5input").value.trim();
+    const game = document.getElementById("gameType").value;
+    const result = document.getElementById("result");
+
+    if (!md5) {
+      alert("Vui lòng nhập mã MD5!");
+      return;
+    }
+
+    const hex = md5.slice(0, 6);
+    const dice = [
+      parseInt(hex.slice(0, 2), 16) % 6 + 1,
+      parseInt(hex.slice(2, 4), 16) % 6 + 1,
+      parseInt(hex.slice(4, 6), 16) % 6 + 1
+    ];
+    const total = dice.reduce((a, b) => a + b, 0);
+    const resultText = total >= 11 ? "Tài" : "Xỉu";
+
+    result.innerHTML = `
+      <p><strong>🎮 Game:</strong> ${game.toUpperCase()}</p>
+      <p><strong>🎲 Kết quả:</strong> ${resultText} (${total})</p>
+      <p>🧮 Dice: ${dice.join(" - ")}</p>
+    `;
+  }
+</script>
+
+</body>
+</html>
