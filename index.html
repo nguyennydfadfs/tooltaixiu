@@ -22,6 +22,8 @@
       box-shadow: 0 0 20px #ff00ff88, 0 0 40px #00ffff44;
       text-align: center;
       width: 320px;
+      z-index: 10;
+      position: relative;
     }
     h2 {
       color: #ff00ff;
@@ -71,9 +73,21 @@
       cursor: pointer;
       width: 100%;
     }
+
+    /* Sakura canvas layer */
+    #sakura {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
   </style>
 </head>
 <body>
+
+<!-- Canvas hoa anh đào -->
+<canvas id="sakura"></canvas>
 
 <div class="container" id="key-area">
   <h2>🔐 Nhập License Key</h2>
@@ -96,6 +110,7 @@
   <div id="history" class="hidden"></div>
 </div>
 
+<!-- Script MD5 logic -->
 <script>
   const vipKey = "admintoolv4";
   const regularKey = "admin";
@@ -155,7 +170,6 @@
 
     result.innerHTML = output;
 
-    // Thêm vào lịch sử 2 phiên
     historyList.unshift(output);
     if (historyList.length > 2) historyList = historyList.slice(0, 2);
     document.getElementById("history").innerHTML = historyList.join("<hr>");
@@ -165,6 +179,62 @@
     const history = document.getElementById("history");
     history.classList.toggle("hidden");
   }
+</script>
+
+<!-- Script Sakura -->
+<script>
+  const canvas = document.getElementById('sakura');
+  const ctx = canvas.getContext('2d');
+  const petals = [];
+  const petalCount = 30;
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  class Petal {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * -canvas.height;
+      this.size = 8 + Math.random() * 8;
+      this.speedY = 1 + Math.random() * 2;
+      this.speedX = Math.random() * 2 - 1;
+      this.opacity = 0.6 + Math.random() * 0.4;
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.y > canvas.height) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255, 182, 193, ${this.opacity})`;
+      ctx.ellipse(this.x, this.y, this.size * 0.6, this.size, Math.PI / 4, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < petalCount; i++) {
+    petals.push(new Petal());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let petal of petals) {
+      petal.update();
+      petal.draw();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  animate();
 </script>
 
 </body>
